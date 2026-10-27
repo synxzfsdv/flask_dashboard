@@ -162,11 +162,9 @@
                                 <span class="badge {{ item.type.lower() }}">
                                     {% if item.type.lower() == 'income' %}📈{% else %}📉{% endif %} {{ item.type }}
                                 </span>
+                            <td class="{% if item.type.lower() == 'income' %}amount-income{% else %}amount-expense{% endif %}">
+                               {% if item.type.lower() == 'income' %}+{% else %}-{% endif %}₱{{ "%.2f"|format(item.amount) }}
                             </td>
-                            <td class="amount-cell" style="color: {% if item.type.lower() == 'income' %}#2e7d32{% else %}#c62828{% endif %};">
-                                {% if item.type.lower() == 'income' %}+{% else %}-{% endif %}₱{{ "%.2f"|format(item.amount) }}
-                            </td>
-                        </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
