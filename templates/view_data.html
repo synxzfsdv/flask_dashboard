@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .records-page-container {
+        max-width: 850px;
+        margin: 20px auto;
+    }
+
+    .records-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 35px 30px;
+        border-radius: 28px;
+        border: 1px solid var(--border-pink, #ffccd5);
+        box-shadow: 0 15px 35px rgba(255, 117, 143, 0.12);
+    }
+
+    .records-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .records-card h1 {
+        color: var(--dark-rose, #590d22);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Pinalitang button style para sakto lang sa sukat at cute */
+    .btn-add-cute {
+        background: linear-gradient(135deg, #ff758f 0%, #ff4d6d 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(255, 77, 109, 0.25);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-add-cute:hover {
+        background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 77, 109, 0.35);
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid var(--border-pink, #ffccd5);
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-family: inherit;
+        background-color: #ffffff;
+    }
+
+    .data-table th {
+        background-color: #fff0f3;
+        color: var(--dark-rose, #590d22);
+        padding: 14px 18px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-bottom: 2px solid var(--border-pink, #ffccd5);
+    }
+
+    .data-table td {
+        padding: 14px 18px;
+        color: #4a3e3d;
+        font-size: 0.92rem;
+        border-bottom: 1px solid #ffe5ec;
+    }
+
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #fff9fa;
+        transition: background 0.2s ease;
+    }
+
+    /* Cute Badges for Income / Expense */
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .badge.income {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+    }
+
+    .badge.expense {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
+    }
+
+    .amount-cell {
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted, #805b65);
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="records-page-container">
+    <div class="records-card">
+        <div class="records-header">
+            <h1>All Records 📋</h1>
+            <a href="{{ url_for('add_entry') }}" class="btn-add-cute">+ Add New</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if records %}
+                        {% for item in records %}
+                        <tr>
+                            <td>{{ item.description }}</td>
+                            <td>
+                                <span style="background: #fff0f3; color: var(--dark-rose); padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;">
+                                    {{ item.category }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ item.type.lower() }}">
+                                    {% if item.type.lower() == 'income' %}📈{% else %}📉{% endif %} {{ item.type }}
+                                </span>
+                            </td>
+                            <td class="amount-cell" style="color: {% if item.type.lower() == 'income' %}#2e7d32{% else %}#c62828{% endif %};">
+                                {% if item.type.lower() == 'income' %}+{% else %}-{% endif %}₱{{ "%.2f"|format(item.amount) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <p style="font-size: 1.5rem; margin-bottom: 5px;">🌸</p>
+                                    No transaction records found yet. Start adding your income and expenses!
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .admin-section {
+        margin-bottom: 35px;
+    }
+    
+    .admin-card {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 25px 30px;
+        border-radius: 20px;
+        border: 1px solid var(--border-pink);
+        box-shadow: 0 10px 25px rgba(255, 117, 143, 0.08);
+        margin-top: 15px;
+    }
+
+    .admin-card h3 {
+        color: var(--dark-rose);
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.25rem;
+    }
+
+    .search-box, .broadcast-textarea {
+        width: 100%;
+        padding: 12px 18px;
+        box-sizing: border-box;
+        border: 1.5px solid var(--border-pink);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        background-color: #fff9fa;
+        outline: none;
+        color: #4a3e3d;
+        margin-bottom: 15px;
+        transition: var(--transition);
+    }
+
+    .search-box:focus, .broadcast-textarea:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 4px rgba(255, 117, 143, 0.15);
+        background-color: #ffffff;
+    }
+
+    .logs-scroll-container {
+        max-height: 300px;
+        overflow-y: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-pink);
+        background: #ffffff;
+    }
+
+    .logs-scroll-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .logs-scroll-container::-webkit-scrollbar-thumb {
+        background-color: var(--border-pink);
+        border-radius: 4px;
+    }
+
+    .user-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff9fa;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border-pink);
+        margin-bottom: 8px;
+    }
+
+    .make-admin-btn {
+        background: linear-gradient(135deg, #38b000, #2b9348);
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(56, 176, 0, 0.2);
+        transition: var(--transition);
+    }
+
+    .make-admin-btn:hover {
+        background: linear-gradient(135deg, #2b9348, #195c2b);
+    }
+
+    .remove-admin-btn {
+        background: linear-gradient(135deg, #ff4d6d, #c9184a);
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(255, 77, 109, 0.2);
+        transition: var(--transition);
+    }
+
+    .remove-admin-btn:hover {
+        background: linear-gradient(135deg, #c9184a, #800f2f);
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.9rem;
+    }
+
+    .admin-table th {
+        background-color: var(--light-pink);
+        color: var(--dark-rose);
+        padding: 12px 15px;
+        font-weight: 600;
+        border-bottom: 2px solid var(--border-pink);
+    }
+
+    .admin-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255, 117, 143, 0.15);
+        color: #4a3e3d;
+    }
+
+    .admin-table tr:hover {
+        background-color: rgba(255, 240, 243, 0.5);
+    }
+</style>
+
+<div class="admin-container">
+    <h2>👑 Admin Control Panel</h2>
+    <p style="color: var(--text-muted); margin-bottom: 25px;">Exclusive management dashboard and system audit logs.</p>
+
+    <!-- SECTION 1: BROADCAST POP-UP MESSAGE -->
+    <div class="admin-section">
+        <div class="admin-card">
+            <h3>📢 Send Pop-up Message to Users</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                Mag-type ng mensahe dito at i-broadcast para lumitaw ito bilang center-screen pop-up sa mga regular users.
+            </p>
+            
+            <form action="{{ url_for('broadcast_message') }}" method="POST">
+                <textarea name="announcement_text" class="broadcast-textarea" rows="3" placeholder="Isulat dito ang mensahe o paalala para sa mga users..." required style="resize: vertical;"></textarea>
+                <button type="submit" class="btn">🚀 Broadcast Pop-up Message</button>
+            </form>
+
+            {% if announcement.active %}
+            <form action="{{ url_for('clear_broadcast') }}" method="POST" style="margin-top: 10px;">
+                <button type="submit" class="btn" style="background: linear-gradient(135deg, #ff4d6d, #c9184a);">🗑️ Turn Off / Remove Pop-up</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- SECTION 2: ACTIVITY LOGS -->
+    <div class="admin-section">
+        <div class="admin-card">
+            <h3>📝 Admin Activity Logs</h3>
+            
+            <input type="text" id="logSearch" class="search-box" placeholder="🔍 Search logs by username or action..." onkeyup="filterLogs()">
+
+            <div class="logs-scroll-container">
+                <table class="admin-table" id="logsTable">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action Performed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminLogsTableBody">
+                        {% for log in logs %}
+                        <tr>
+                            <td style="color: var(--text-muted);">{{ log.time }}</td>
+                            <td><strong>{{ log.user }}</strong></td>
+                            <td>{{ log.action }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">No activity logs recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: REGISTERED USERS & MANAGEMENT -->
+    <div class="admin-section">
+        <div class="admin-card">
+            <h3>👥 Registered Users & Management</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                {% for uname, details in users_db.items() %}
+                    <div class="user-item-row">
+                        <div>
+                            <span style="font-weight: 600; color: var(--dark-rose);">🌸 {{ uname }}</span>
+                            {% if details.is_admin %}
+                                <span style="background: var(--light-pink); color: var(--primary-pink); padding: 3px 10px; border-radius: 8px; font-size: 0.75rem; margin-left: 10px; font-weight: 600;">👑 Admin</span>
+                            {% else %}
+                                <span style="background: #e9ecef; color: #6c757d; padding: 3px 10px; border-radius: 8px; font-size: 0.75rem; margin-left: 10px;">User</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            {% if not details.is_admin %}
+                            <form action="{{ url_for('make_admin', username=uname) }}" method="POST" style="margin: 0; display: inline-block;">
+                                <button type="submit" class="make-admin-btn">⭐ Make Admin</button>
+                            </form>
+                            {% elif uname != 'admin' and uname != session.user %}
+                            <form action="{{ url_for('remove_admin', username=uname) }}" method="POST" style="margin: 0; display: inline-block;">
+                                <button type="submit" class="remove-admin-btn">🛡️ Remove Admin</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: GLOBAL TRANSACTIONS -->
+    <div class="admin-section">
+        <div class="admin-card">
+            <h3>📊 Global System Transactions</h3>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in transactions %}
+                        <tr>
+                            <td><strong>{{ item.owner }}</strong></td>
+                            <td>
+                                <span class="badge {{ item.type.lower() }}">
+                                    {{ item.type }}
+                                </span>
+                            </td>
+                            <td>{{ item.category }}</td>
+                            <td>₱{{ "%.2f"|format(item.amount) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No transactions found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterLogs() {
+    let input = document.getElementById("logSearch");
+    let filter = input.value.toLowerCase();
+    let table = document.getElementById("logsTable");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let tdUser = tr[i].getElementsByTagName("td")[1];
+        let tdAction = tr[i].getElementsByTagName("td")[2];
+        
+        if (tdUser || tdAction) {
+            let userValue = tdUser.textContent || tdUser.innerText;
+            let actionValue = tdAction.textContent || tdAction.innerText;
+            
+            if (userValue.toLowerCase().indexOf(filter) > -1 || actionValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

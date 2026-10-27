@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-page-container {
+        max-width: 520px;
+        margin: 20px auto;
+    }
+
+    .cute-form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 35px 30px;
+        border-radius: 28px;
+        border: 1px solid var(--border-pink, #ffccd5);
+        box-shadow: 0 15px 35px rgba(255, 117, 143, 0.12);
+    }
+
+    .cute-form-card h1 {
+        color: var(--dark-rose, #590d22);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .form-subtitle {
+        color: var(--text-muted, #805b65);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .alert-error {
+        background-color: #fff0f3;
+        color: #d90429;
+        border: 1px solid #ffccd5;
+        padding: 12px 16px;
+        border-radius: 14px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .app-form .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .app-form label {
+        display: block;
+        color: var(--dark-rose, #590d22);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .app-form input[type="text"],
+    .app-form select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.5px solid var(--border-pink, #ffccd5);
+        border-radius: 14px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        background-color: #fff9fa;
+        color: #4a3e3d;
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .app-form input[type="text"]:focus,
+    .app-form select:focus {
+        border-color: var(--primary-pink, #ff758f);
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(255, 117, 143, 0.15);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #ff758f 0%, #ff4d6d 100%);
+        color: white;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        width: 100%;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 77, 109, 0.4);
+    }
+</style>
+
+<div class="form-page-container">
+    <div class="cute-form-card">
+        <h1>Add New Transaction 🌸</h1>
+        <p class="form-subtitle">Record your income or expenses easily</p>
+
+        {% if error %}
+            <div class="alert-error">
+                ⚠️ {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="{{ url_for('add_entry') }}" method="POST" class="app-form">
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" placeholder="e.g., Groceries or Allowance" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" name="category" placeholder="e.g., Food, Transport" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>Amount (₱)</label>
+                <input type="text" id="amount" name="amount" placeholder="e.g., 250.00" required autocomplete="off">
+                <script>
+                    document.getElementById("amount").addEventListener("input", function () {
+                        this.value = this.value.replace(/[^0-9.]/g, "");
+                    });
+                </script>
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <select name="entry_type">
+                    <option value="Expense">📉 Expense</option>
+                    <option value="Income">📈 Income</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">✨ Submit Entry</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

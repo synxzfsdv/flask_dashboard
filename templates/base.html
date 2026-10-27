@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trisha maohab</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-pink: #fcf9fa;
+            --primary-pink: #ff758f;
+            --hover-pink: #ff4d6d;
+            --dark-rose: #590d22;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --border-pink: #ffccd5;
+            --income-color: #38b000;
+            --expense-color: #ff002f;
+            --text-muted: #0e0608;
+            --light-pink: #ffe5ec;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: linear-gradient(#b2a0d1, #654d8f),
+                        url("{{ url_for('static', filename='images/bg.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #000000;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #cbbfe0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-right: 1px solid var(--border-pink);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .sidebar-brand h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--dark-rose);
+        }
+
+        .sidebar-brand p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 4px 0 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--light-pink);
+            color: var(--primary-pink);
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border-pink);
+            padding-top: 15px;
+            text-align: center;
+        }
+
+        .sidebar-quote {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-logout {
+            display: block;
+            padding: 10px;
+            background: #ffe5ec;
+            color: var(--expense-color);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-logout:hover {
+            background: #ffb3c1;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-pink);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(255, 117, 143, 0.08);
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            color: var(--dark-rose);
+        }
+
+        .header-title p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-badge {
+            background: var(--light-pink);
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--dark-rose);
+            font-weight: 500;
+        }
+
+        .user-avatar-badge {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-pink);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.1rem;
+        }
+
+        /* GENERAL UTILITIES */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 24px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border-pink);
+            box-shadow: 0 10px 25px rgba(255, 117, 143, 0.08);
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff758f 0%, #ff4d6d 100%);
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            cursor: pointer;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+        }
+
+        /* CENTER-SCREEN BROADCAST MODAL POPUP STYLING */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 62, 61, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        .modal-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid var(--border-pink);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 117, 143, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            color: #4a3e3d;
+            animation: scaleUpModal 0.3s ease;
+        }
+
+        .modal-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .modal-card h3 { color: var(--dark-rose); margin-top: 0; margin-bottom: 12px; font-size: 1.4rem; }
+        .modal-card p { font-size: 1rem; margin-bottom: 20px; line-height: 1.5; color: #555; word-break: break-word; }
+
+        .modal-btn {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-rose));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 117, 143, 0.4);
+            width: 100%;
+        }
+
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUpModal { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- INITIAL CENTER-SCREEN MODAL -->
+    {% if announcement.active and session.user and session.user in users_db and not users_db[session.user].is_admin %}
+    <div class="modal-overlay" id="userBroadcastModal">
+        <div class="modal-card">
+            <div class="modal-icon">🌸📢</div>
+            <h3>System Announcement</h3>
+            <p>{{ announcement.message }}</p>
+            <button class="modal-btn" onclick="document.getElementById('userBroadcastModal').style.display='none';">Got it, Thanks! ✨</button>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="app-layout">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>📊 Dashboard</h2>
+                <p>Ang gastos mo !</p>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">🏠 Home Dashboard</a></li>
+                <li><a href="{{ url_for('add_entry') }}" class="{% if request.path == url_for('add_entry') %}active{% endif %}">➕ Add Transaction</a></li>
+                <li><a href="{{ url_for('view_data') }}" class="{% if request.path == url_for('view_data') %}active{% endif %}">📋 View Records</a></li>
+
+                {% if session.user and session.user in users_db and users_db[session.user].is_admin %}
+                    <li><a href="{{ url_for('admin_panel') }}" class="{% if request.path == url_for('admin_panel') %}active{% endif %}">👑 Admin Panel</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-footer">
+                <p class="sidebar-quote">"Magastos Ka Kasi!!"</p>
+                <a href="{{ url_for('logout') }}" class="sidebar-logout">Logout ({{ session.user }})</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>Welcome back, {{ session.user }}! ✨</h1>
+                    <p>Mag iipon o mag gagala?</p>
+                </div>
+                <div class="header-right">
+                    <span class="date-badge">November 26, 2026</span>
+                    <div class="user-avatar-badge"> . ݁⋆ ۶ৎ ݁˖ . ݁</div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

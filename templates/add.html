@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <div class="card" style="max-width: 520px; width: 100%;">
+        <h3>➕ Add New Transaction</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">I-tala ang iyong kita o gastos para sa orbit savings mo!</p>
+        
+        <form method="POST">
+            <div style="margin-bottom: 15px; text-align: left;">
+                <label for="title">Transaction Title</label>
+                <input type="text" id="title" name="title" required placeholder="Hal. Sahod, Kape, Tinda...">
+            </div>
+
+            <div style="margin-bottom: 15px; text-align: left;">
+                <label for="amount">Amount (₱)</label>
+                <input type="number" step="0.01" id="amount" name="amount" required placeholder="0.00">
+            </div>
+
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label for="type">Transaction Type</label>
+                <select id="type" name="type" required>
+                    <option value="income" style="background: #320a23; color: #fff;">🟢 Income (Pasok pera)</option>
+                    <option value="expense" style="background: #320a23; color: #fff;">🔴 Expense (Gastos)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Save Transaction ✨</button>
+        </form>
+        
+        <div style="margin-top: 15px;">
+            <a href="{{ url_for('home') }}" style="color: var(--pink-glow); text-decoration: none; font-size: 0.85rem;">← Bumalik sa Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

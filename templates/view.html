@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container" style="max-width: 750px;">
+    <div class="card" style="max-width: 100% !important; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0;">📋 All Transaction Records</h3>
+            <a href="{{ url_for('home') }}" class="btn" style="padding: 6px 14px; font-size: 0.8rem; width: auto; text-decoration: none;">← Home</a>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-pink); color: var(--pink-glow);">
+                        <th style="padding: 10px;">Date</th>
+                        <th style="padding: 10px;">Title</th>
+                        <th style="padding: 10px;">Type</th>
+                        <th style="padding: 10px; text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in entries %}
+                    <tr style="border-bottom: 1px solid rgba(255, 117, 143, 0.15);">
+                        <td style="padding: 10px; color: var(--text-muted);">{{ item.date }}</td>
+                        <td style="padding: 10px; font-weight: 500;">{{ item.title }}</td>
+                        <td style="padding: 10px;">
+                            {% if item.type == 'income' %}
+                                <span style="color: var(--income-color); font-weight: 600;">Income</span>
+                            {% else %}
+                                <span style="color: var(--expense-color); font-weight: 600;">Expense</span>
+                            {% endif %}
+                        </td>
+                       <td style="padding: 10px; text-align: right; font-weight: 600;" 
+    class="{% if item.type|lower == 'income' %}income-text{% else %}expense-text{% endif %}">
+    {% if item.type|lower == 'income' %}+{% else %}-{% endif %}₱{{ "%.2f"|format(item.amount) }}
+</td>
+                            {% if item.type == 'income' %}+{% else %}-{% endif %}₱{{ "%.2f"|format(item.amount) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">Wala pang nakatalang transaksyon sa orbit mo! ✨</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

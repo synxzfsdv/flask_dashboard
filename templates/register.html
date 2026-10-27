@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trisha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-pink: #fff0f3;
+            --primary-pink: #ff758f;
+            --hover-pink: #ff4d6d;
+            --dark-rose: #590d22;
+            --card-bg: #ffffff;
+            --border-pink: #ffccd5;
+            --text-muted: #805b65;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.auth-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 45px 40px;
+            border-radius: 24px;
+            border: 1px solid var(--border-pink);
+            box-shadow: 0 20px 40px rgba(255, 117, 143, 0.12);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-card h2 {
+            color: var(--dark-rose);
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-rose);
+            font-size: 0.88rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px;
+            box-sizing: border-box;
+            border: 1.5px solid var(--border-pink);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background-color: #fff9fa;
+            outline: none;
+            color: #4a3e3d;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 0 4px rgba(255, 117, 143, 0.15);
+            background-color: #ffffff;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff758f 0%, #ff4d6d 100%);
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            cursor: pointer;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+        }
+
+        .alert-error {
+            background-color: #ffe5ec;
+            color: #a4133c;
+            border: 1px solid #ffb3c1;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+        }
+
+        .auth-link {
+            margin-top: 24px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .auth-link a {
+            color: var(--primary-pink);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <h2>✨ Create Account</h2>
+        <p>Sign up to start tracking your finances</p>
+
+        {% if error %}
+            <div class="alert-error">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Register</button>
+        </form>
+
+        <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+</body>
+</html>

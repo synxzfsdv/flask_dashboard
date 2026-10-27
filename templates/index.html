@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* COMPACT RECTANGLE CARDS STYLING */
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 1px solid var(--border-pink);
+        box-shadow: 0 6px 20px rgba(255, 117, 143, 0.08);
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 117, 143, 0.15);
+    }
+
+    /* PROFILE / USER INFO CARD */
+    .profile-card h3 {
+        color: var(--dark-rose);
+        margin: 4px 0;
+        font-size: 1.2rem;
+    }
+
+    .profile-card p {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        margin: 2px 0;
+    }
+
+    /* QUICK ACTIONS */
+    .quick-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 5px;
+    }
+
+    .quick-links a {
+        color: var(--primary-pink);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: var(--transition);
+    }
+
+    .quick-links a:hover {
+        color: var(--hover-pink);
+        text-decoration: underline;
+    }
+
+    /* FINANCIAL METRICS */
+    .metric-title {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .metric-amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .income-text { color: var(--income-color); }
+    .expense-text { color: var(--expense-color); }
+    .balance-text { color: var(--dark-rose); }
+</style>
+
+<div class="dashboard-container">
+    
+    <!-- USER PROFILE SUMMARY CARD -->
+    <div class="card profile-card">
+        <div style="font-size: 1.5rem; margin-bottom: 2px;">🌸</div>
+        <h3>{{ username }}</h3>
+        <p><strong>Role:</strong> {% if users_db[username].is_admin %}Administrator{% else %}Regular Student{% endif %}</p>
+        <p><strong>Status:</strong> Active & Tracking</p>
+        <p style="font-style: italic; margin-top: 4px; font-size: 0.78rem;">"Magastos Ka Kasi!!" 💜</p>
+    </div>
+
+    <!-- QUICK ACTIONS CARD -->
+    <div class="card">
+        <h4 style="margin: 0 0 8px 0; color: var(--dark-rose); font-size: 0.95rem;">⚡ Quick Actions</h4>
+        <div class="quick-links">
+            <a href="{{ url_for('add_entry') }}">➕ Add Transaction</a>
+            <a href="{{ url_for('view_data') }}">📋 View All Records</a>
+            {% if users_db[username].is_admin %}
+                <a href="{{ url_for('admin_panel') }}">👑 Open Admin Panel</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TOTAL INCOME CARD -->
+    <div class="card">
+        <div class="metric-title">Total Income</div>
+        <p class="metric-amount income-text">₱{{ "%.2f"|format(total_income) }}</p>
+    </div>
+
+    <!-- TOTAL EXPENSES CARD -->
+    <div class="card">
+        <div class="metric-title">Total Expenses</div>
+        <p class="metric-amount expense-text">₱{{ "%.2f"|format(total_expense) }}</p>
+    </div>
+
+    <!-- NET BALANCE CARD -->
+    <div class="card">
+        <div class="metric-title">Net Balance</div>
+        <p class="metric-amount balance-text">₱{{ "%.2f"|format(balance) }}</p>
+    </div>
+
+</div>
+{% endblock %}
