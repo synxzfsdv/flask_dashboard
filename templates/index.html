@@ -90,7 +90,7 @@
     <div class="card profile-card">
         <div style="font-size: 1.5rem; margin-bottom: 2px;">🌸</div>
         <h3>{{ username }}</h3>
-        <p><strong>Role:</strong> {% if users_db[username].is_admin %}Administrator{% else %}Regular Student{% endif %}</p>
+        <p><strong>Role:</strong> {% if users_db.get(username, {}).get("is_admin", False) %}Administrator{% else %}Regular Student{% endif %}</p>
         <p><strong>Status:</strong> Active & Tracking</p>
         <p style="font-style: italic; margin-top: 4px; font-size: 0.78rem;">"Magastos Ka Kasi!!" 💜</p>
     </div>
