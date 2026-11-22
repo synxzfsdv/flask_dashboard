@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import datetime
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 app = Flask(__name__)
-app.secret_key = "super_secret_pink_key_here"
 
-# --- GLOBAL DATABASE & STATE ---
+# Mas ligtas gamitin ang environment variable sa PythonAnywhere; may fallback lang kung wala pa
+app.secret_key = os.environ.get("SECRET_KEY", "super_secret_pink_key_here")
+
+# --- GLOBAL DATABASE & STATE (In-memory) ---
+# Paalala: Mawawala ang mga bagong dagdag na data kapag ni-reload ang web app sa PythonAnywhere.
 users_db = {
     "admin": {"password": "password123", "is_admin": True}
 }
@@ -17,15 +21,17 @@ data_records = [
 admin_logs = []
 current_announcement = {"message": "", "active": False}
 
+
 # --- HELPER FUNCTIONS ---
 def record_log(username, action):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = {
-        'time': current_time,
-        'user': username,
-        'action': action
+        "time": current_time,
+        "user": username,
+        "action": action
     }
     admin_logs.insert(0, log_entry)
+
 
 def calculate_user_totals(username):
     total_income = 0.0
@@ -41,7 +47,8 @@ def calculate_user_totals(username):
     net_balance = total_income - total_expense
     return total_income, total_expense, net_balance, len(user_records)
 
-# Context processor para laging available ang announcement at users_db sa templates
+
+# Laging available ang announcement at users_db sa lahat ng templates (kasama ang index.html line 93)
 @app.context_processor
 def inject_globals():
     return dict(
@@ -49,10 +56,12 @@ def inject_globals():
         users_db=users_db
     )
 
+
 # --- API ENDPOINTS (REAL-TIME POLLING) ---
 @app.route("/api/check-announcement")
 def check_announcement():
     return jsonify(current_announcement)
+
 
 @app.route("/api/get-logs")
 def get_logs():
@@ -60,6 +69,7 @@ def get_logs():
     if not user or not users_db.get(user, {}).get("is_admin", False):
         return jsonify([])
     return jsonify(admin_logs)
+
 
 # --- AUTHENTICATION ROUTES ---
 @app.route("/login", methods=["GET", "POST"])
@@ -78,13 +88,14 @@ def login():
             session["user"] = username
             record_log(username, "Logged in successfully")
 
-            if users_db[username]["is_admin"]:
+            if users_db[username].get("is_admin", False):
                 return redirect(url_for("admin_panel"))
             return redirect(url_for("home"))
         else:
             error = "Invalid username or password!"
 
     return render_template("login.html", error=error)
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -107,6 +118,7 @@ def register():
 
     return render_template("register.html", error=error)
 
+
 @app.route("/logout")
 def logout():
     user = session.get("user")
@@ -114,6 +126,7 @@ def logout():
         record_log(user, "Logged out of the system")
     session.pop("user", None)
     return redirect(url_for("login"))
+
 
 # --- CORE DASHBOARD ROUTES ---
 @app.route("/")
@@ -132,6 +145,7 @@ def home():
         count=count,
         username=username
     )
+
 
 @app.route("/add", methods=["GET", "POST"])
 def add_entry():
@@ -169,6 +183,7 @@ def add_entry():
 
     return render_template("add_entry.html", error=error_message)
 
+
 @app.route("/records")
 def view_data():
     if "user" not in session:
@@ -178,6 +193,7 @@ def view_data():
     user_records = [item for item in data_records if item["owner"] == username]
     return render_template("view_data.html", records=user_records)
 
+
 # --- ADMIN PANEL ROUTES ---
 @app.route("/admin")
 def admin_panel():
@@ -185,13 +201,14 @@ def admin_panel():
     if not user or not users_db.get(user, {}).get("is_admin", False):
         return redirect(url_for("login"))
 
-    record_log("admin", "Accessed the Admin Control Panel")
+    record_log(user, "Accessed the Admin Control Panel")
 
     return render_template(
         "admin.html",
         transactions=data_records,
         logs=admin_logs
     )
+
 
 @app.route("/admin/make-admin/<username>", methods=["POST"])
 def make_admin(username):
@@ -205,6 +222,7 @@ def make_admin(username):
 
     return redirect(url_for("admin_panel"))
 
+
 @app.route("/admin/remove-admin/<username>", methods=["POST"])
 def remove_admin(username):
     current_user = session.get("user")
@@ -216,6 +234,7 @@ def remove_admin(username):
         record_log(current_user, f"Removed admin privileges from '{username}'")
 
     return redirect(url_for("admin_panel"))
+
 
 @app.route("/admin/broadcast", methods=["POST"])
 def broadcast_message():
@@ -231,6 +250,7 @@ def broadcast_message():
 
     return redirect(url_for("admin_panel"))
 
+
 @app.route("/admin/clear-broadcast", methods=["POST"])
 def clear_broadcast():
     user = session.get("user")
@@ -243,5 +263,7 @@ def clear_broadcast():
 
     return redirect(url_for("admin_panel"))
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug_mode)
