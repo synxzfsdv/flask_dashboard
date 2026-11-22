@@ -10,8 +10,8 @@ users_db = {
 }
 
 data_records = [
-    {"owner": "admin", "description": "Allowance", "category": "Income", "amount": 1000.0, "type": "Income"},
-    {"owner": "admin", "description": "Lunch", "category": "Food", "amount": 150.0, "type": "Expense"}
+    {"owner": "admin", "description": "Allowance", "category": "Income", "amount": 0, "type": "Income"},
+    {"owner": "admin", "description": "Lunch", "category": "Food", "amount": 0, "type": "Expense"}
 ]
 
 admin_logs = []
